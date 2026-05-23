@@ -14,7 +14,7 @@ Fortify (2FA, passkeys) · PostgreSQL + Redis · Wayfinder (rotas tipadas) · Pe
 
 ## DDD (backend)
 - Lógica de negócio em `app/src/{Context}/` (namespace `Src\`), tipicamente `Domain/Application/Infrastructure`.
-- Controllers finos em `app/Http/Controllers/{Context}/` — só orquestram.
+- Controllers finos em `app/Http/Controllers/{Context}/` — só orquestram; respondem **Inertia** (padrão) ou **JSON** conforme o header.
 - Padrões: Service + Repository, SOLID, DRY, TDD.
 
 ## Fluxo SDD

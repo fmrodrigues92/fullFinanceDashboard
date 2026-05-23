@@ -8,6 +8,9 @@
 
 > Esta é a **fonte da verdade** entre backend e frontend. O frontend só confia no que está aqui.
 > Toda operação é autenticada e isolada por `user_id` via Policy.
+> **Transporte:** o app usa **Inertia.js** — leituras chegam como **props de página** (`Inertia::render`) e
+> escritas respondem com **redirect + flash**. O mesmo controller devolve **JSON** quando o cliente manda
+> `Accept: application/json`. Os schemas abaixo descrevem o **shape dos dados** (idêntico em props e JSON).
 
 ## Endpoints
 
@@ -15,6 +18,7 @@
 - **Descrição:** {...}
 - **Auth:** obrigatória · **Policy:** {nome da policy / regra de propriedade}
 - **Wayfinder:** `{nome.da.rota}`
+- **Transporte:** Inertia (`{página, ex.: Transactions/Index}` + props) · JSON (mesmo shape sob `Accept: application/json`)
 
 **Request**
 ```json
@@ -23,7 +27,7 @@
 }
 ```
 
-**Response 200**
+**Response 200** _(props da página Inertia / corpo JSON — mesmo shape)_
 ```json
 {
   "id": "number",

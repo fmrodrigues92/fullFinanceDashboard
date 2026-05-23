@@ -43,3 +43,6 @@ ao subagent correspondente em `.claude/agents/`.
 ## Regra de ouro do contrato
 O **contrato** (`docs/contracts/`) é a fronteira entre backend e frontend. Se o backend mudar o contrato,
 atualiza o arquivo; o frontend só confia no que está escrito ali. Tipos TS no frontend devem refletir o contrato 1:1.
+
+**Transporte:** o app é **Inertia.js** — leituras chegam como props de página e escritas como redirect + flash;
+o mesmo endpoint responde JSON sob `Accept: application/json`. O contrato descreve o shape dos dados (igual nos dois).

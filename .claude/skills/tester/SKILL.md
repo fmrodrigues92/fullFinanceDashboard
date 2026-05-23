@@ -18,5 +18,19 @@ description: Especialista em testes unitários do fullFinanceDashboard. Use depo
 ## Invariantes (ver CLAUDE.md)
 - Não duplicar fluxo HTTP/feature tests. Testes rápidos e determinísticos. Sempre Sail. Nunca commitar.
 
-## Responsabilidades e processo
-_(A especificar.)_
+## Escopo (o que cobrir, o que não)
+- **Cobrir:** Value Objects (validação, igualdade, formatação), Domain Services e cálculos (classes de
+  equivalência, fronteiras, entradas inválidas), ramos de exceção do domínio, e Application services em
+  **isolamento** (mockando a interface do Repository) — orquestração sem banco.
+- **Não cobrir:** fluxo HTTP (feature test é do `/backend`), a regra que o teste de TDD do `/backend` já garante,
+  nem Eloquent/Infrastructure (isso é integração, não unit).
+
+## Processo
+1. Leia `app/src/{Context}/` + o contrato; liste as unidades puras e as regras de negócio da spec.
+2. Veja o que os testes do `/backend` já cobrem; mire só as **lacunas**: bordas, ramos de erro, combinações.
+3. Escreva em `tests/Unit/{Context}/` (Pest): um comportamento por teste, Arrange-Act-Assert.
+   - **Datasets** do Pest para matrizes de casos (evita testes copiados → DRY).
+   - Mock da interface do Repository via Mockery ao testar Application service; sem tocar banco.
+   - Determinismo: injete relógio/seed em vez de `now()`/`rand()`.
+4. `./vendor/bin/sail artisan test --testsuite=Unit` — verde e rápido.
+5. Difícil de testar isolado? **Não force** — reporte ao `/backend` como sinal de acoplamento (refatorar via DIP/SRP).

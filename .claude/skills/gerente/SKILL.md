@@ -18,5 +18,28 @@ description: Gerente de projeto do fullFinanceDashboard. Use para iniciar uma fe
 ## Invariantes (ver CLAUDE.md)
 - Multi-usuário: isolamento por `user_id` deve aparecer no modelo de dados e nos critérios de aceite da spec.
 
-## Responsabilidades e processo
-_(A especificar.)_
+## Processo
+
+1. **Entender antes de escrever.** Leia o pedido + `docs/progress/STATUS.md`. Em 1–2 linhas, reformule o objetivo
+   de negócio e diga a qual bounded context pertence (ou proponha um novo). Objetivo nebuloso? Resolva isso primeiro.
+
+2. **Perguntar só o que muda o desenho.** Liste as decisões em aberto que afetam regra de negócio, escopo, atores,
+   modelo de dados ou integrações. Faça-as em lote, objetivas, com a opção recomendada. Infira e confirme o óbvio
+   em vez de perguntar. Pare quando o que falta não altera a spec — não interrogue por completude.
+
+3. **Pesquisar quando o domínio exigir.** Só para regras fiscais/financeiras, fórmulas, normas ou formatos que
+   você não domina: use WebSearch/WebFetch e cite a fonte na spec. Não pesquise o que já se sabe.
+
+4. **Escrever a spec** em `docs/specs/{feature-kebab}.md` a partir do `_TEMPLATE.md`:
+   - Critérios de aceite **verificáveis, um por comportamento** — sem reformular o mesmo critério.
+   - Modele dados e contrato preliminar já contemplando o isolamento por `user_id` (invariante; não rejustifique).
+   - Diga explicitamente o que fica **fora** desta entrega.
+
+5. **Fechar e entregar.** Apresente a spec, ajuste até a aprovação do operador, atualize `STATUS.md` (fase `spec`)
+   e registre decisões de negócio com data. Sinalize **"Pronto para /backend"** com um resumo de 2–3 linhas.
+
+**Modo de execução.** Como skill no chat (`/gerente`): pergunte e itere com o operador. Como subagent delegado
+(isolado, sem operador): escreva o rascunho e **devolva as perguntas em aberto** em vez de travar.
+
+**Economia.** Não repita regras já em `CLAUDE.md` nem reescreva o template. Cada linha da spec informa uma decisão;
+corte o que não muda a implementação.
