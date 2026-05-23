@@ -20,22 +20,8 @@ description: Especialista frontend do fullFinanceDashboard. Use para construir a
   `useForm`/`router` do Inertia. JSON só para clientes de API.
 - Rotas via Wayfinder (sem URL hardcoded). UI shadcn/ui. Tratar 403/422 do contrato. Sempre Sail. Nunca commitar.
 
-## Desacoplamento (pode virar projeto independente)
-- Dependa **só do contrato** (`docs/contracts/`) — nunca de internals/banco do backend.
-- Isole o acesso a dados atrás de uma fronteira fina: hoje props Inertia; amanhã pode ser um cliente HTTP/JSON.
-  Páginas e components consomem **tipos do contrato**, não o mecanismo de transporte. "Inertia-acoplado agora, extraível depois."
-- Os tipos em `resources/js/types/` derivam do contrato; são o ponto de troca se o backend virar API externa.
-
-## Layouts comutáveis (`.env` ou header) — testar sem quebrar o atual
-- **Default por `.env`:** `APP_LAYOUT` (lido via `config('app.layout')`).
-- **Override por header:** `X-Layout` na request — QA testa um layout novo enquanto a produção segue no default.
-- O backend compartilha o nome do layout como **prop Inertia** (middleware + allowlist); o React escolhe o
-  componente por um **registry**. Cada layout é uma **pasta self-contained no topo de `resources/js/`**
-  (`layout01`, `layout02`, …); o `layout01` (baseline) re-exporta o `AppLayout` do kit, **sem editá-lo**.
-  Código completo em `patterns.md`.
-
 ## Padrões de código (exemplos)
-Mecanismo de layout comutável + página consumindo contrato: `.claude/skills/frontend/patterns.md`. Copie a forma.
+Página consumindo contrato: `.claude/skills/frontend/patterns.md`. Copie a forma.
 
 ## Processo
 1. Leia `docs/contracts/{feature}.md`: shape dos dados, erros (403/422), paginação, estados vazios.
