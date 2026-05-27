@@ -5,6 +5,9 @@
 - **Autor:** /gerente
 - **Data:** {AAAA-MM-DD}
 
+> Esta spec descreve **o quê e por quê** (negócio). A **fronteira técnica** (endpoints, schemas, tipos)
+> vive em `docs/contracts/{feature}.md`. Seja direta: sem volume gratuito, sem repetir o template.
+
 ## 1. Objetivo de negócio
 {O que o usuário ganha com isto e por quê. 1–3 frases.}
 
@@ -29,17 +32,11 @@
 ## 7. Modelo de dados proposto
 {Entidades, campos, relacionamentos. Toda tabela de negócio tem `user_id` (FK → users).}
 
-## 8. Contrato preliminar (rascunho)
-{Endpoints prováveis — o /backend formaliza isto em docs/contracts/ depois.}
-
-| Método | Rota | Descrição | Auth/Policy |
-|--------|------|-----------|-------------|
-| GET | /... | ... | sim, por user_id |
-
-## 9. Dependências e riscos
+## 8. Dependências e riscos
 - {dependências de outras features, integrações, riscos}
 
-## 10. Handoff
-- [ ] Spec aprovada pelo usuário
+## 9. Handoff
+- [ ] Spec aprovada pelo operador
+- [ ] Contrato publicado em `docs/contracts/{feature}.md`
 - [ ] `docs/progress/STATUS.md` atualizado
-- [ ] Pronta para `/backend`
+- [ ] Pronta para `/backend` e `/frontend` (paralelo)

@@ -11,10 +11,11 @@ import sys
 
 # Prefixos de escrita permitidos por papel (relativos à raiz do projeto).
 POLICIES = {
-    "gerente": ["docs/specs/", "docs/progress/"],
-    "backend": ["app/", "routes/", "database/", "tests/", "docs/contracts/"],
+    "gerente": ["docs/specs/", "docs/progress/", "docs/contracts/"],
+    "backend": ["app/", "routes/", "database/", "tests/"],
     "tester": ["tests/Unit/"],
     "frontend": ["resources/js/"],
+    "auditor": ["docs/audits/", "docs/progress/"],
 }
 
 

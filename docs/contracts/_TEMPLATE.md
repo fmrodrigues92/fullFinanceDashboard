@@ -3,10 +3,13 @@
 - **Bounded Context:** {...}
 - **Spec de origem:** `docs/specs/{feature}.md`
 - **Status:** publicado | revisado
-- **Autor:** /backend
+- **Autor:** /gerente (tech-lead)
 - **Data:** {AAAA-MM-DD}
+- **Revisões:**
+  - {AAAA-MM-DD} — publicação inicial.
 
-> Esta é a **fonte da verdade** entre backend e frontend. O frontend só confia no que está aqui.
+> Esta é a **fonte da verdade** entre backend e frontend. Ambos consomem este arquivo em paralelo.
+> O `/gerente` é o dono; `/backend` e `/frontend` reportam divergências a ele para re-publicação.
 > Toda operação é autenticada e isolada por `user_id` via Policy.
 > **Transporte:** o app usa **Inertia.js** — leituras chegam como **props de página** (`Inertia::render`) e
 > escritas respondem com **redirect + flash**. O mesmo controller devolve **JSON** quando o cliente manda
