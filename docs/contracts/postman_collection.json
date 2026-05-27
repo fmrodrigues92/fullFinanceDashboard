@@ -1,0 +1,658 @@
+{
+  "info": {
+    "name": "fullFinanceDashboard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Auto-gerado de docs/contracts/. Não edite manualmente."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "csrf_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "001 Companies",
+      "item": [
+        {
+          "name": "GET /companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies"
+              ]
+            },
+            "description": "Lista todas as empresas do usuário autenticado, ordenadas por `razao_social`."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /companies",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies"
+              ]
+            },
+            "description": "Cria uma nova empresa para o usuário autenticado.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razao_social\": \"string|required|max:255\",\n  \"nome_fantasia\": \"string|required|max:255\",\n  \"cnpj\": \"string|required|14 dígitos|único por usuário|válido por dígitos verificadores\",\n  \"regime_tributario\": \"enum|required: mei, simples_nacional, lucro_presumido, lucro_real\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /companies/{company}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Exibe os dados de uma empresa do usuário."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /companies/{company}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Atualiza os dados de uma empresa."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /companies/{company}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Remove a empresa e todos os seus sócios, configs e recibos (cascata)."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /companies/{company}/partners",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/partners",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "partners"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Sincroniza o quadro societário completo (substitui todos os sócios). Aceita array vazio para zerar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partners\": [\n    {\n      \"nome\": \"string|required|max:255\",\n      \"cpf\": \"string|required|11 dígitos|válido por dígitos verificadores\",\n      \"participacao\": \"number|required|gt:0|lte:100\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /companies/{company}/prolabore-configs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-configs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-configs"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Lista as configs de pró-labore de todos os sócios da empresa."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /companies/{company}/prolabore-configs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-configs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-configs"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Cria a config de pró-labore para um sócio (único por sócio+empresa).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partner_id\": \"integer|required|único por empresa\",\n  \"valor\": \"number|required|gt:0\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /companies/{company}/prolabore-configs/{config}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-configs/:config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-configs",
+                ":config"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "config",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Atualiza o valor da config de pró-labore.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": \"number|required|gt:0\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /companies/{company}/prolabore-configs/{config}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-configs/:config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-configs",
+                ":config"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "config",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Remove a config de pró-labore."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /companies/{company}/prolabore-records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-records",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-records"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Lista os recibos da empresa. Aceita filtro opcional por competência."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /companies/{company}/prolabore-records",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-records",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-records"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Registra um recibo de pró-labore (único por sócio + empresa + competência).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partner_id\": \"integer|required\",\n  \"competencia\": \"string|required|formato: YYYY-MM\",\n  \"valor\": \"number|required|gt:0\",\n  \"observacao\": \"string|nullable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /companies/{company}/prolabore-records/{record}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-records/:record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-records",
+                ":record"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "record",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Atualiza valor e/ou observação de um recibo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"competencia\": \"string|required|formato: YYYY-MM\",\n  \"valor\": \"number|required|gt:0\",\n  \"observacao\": \"string|nullable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /companies/{company}/prolabore-records/{record}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/:company/prolabore-records/:record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                ":company",
+                "prolabore-records",
+                ":record"
+              ],
+              "variable": [
+                {
+                  "key": "company",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "record",
+                  "value": "",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Remove um recibo de pró-labore."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
