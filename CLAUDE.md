@@ -18,8 +18,13 @@ Fortify (2FA, passkeys) · PostgreSQL + Redis · Wayfinder (rotas tipadas) · Pe
 - Padrões: Service + Repository, SOLID, DRY, TDD.
 
 ## Fluxo SDD
-`/gerente` (spec → `docs/specs/`) → `/backend` (código + contrato → `docs/contracts/`) → `/tester` (unit) → `/frontend` (UI).
-O **contrato** é a fronteira backend↔frontend. Detalhes: `docs/README.md`.
+`/gerente` (tech-lead — spec → `docs/specs/` **e** contrato → `docs/contracts/`) → `/backend` e `/frontend` **em paralelo**
+(ambos consomem o contrato) → `/tester` e `/auditor` **em paralelo** (após o `/backend`).
+O **contrato** é a fronteira backend↔frontend; **dono único: `/gerente`**. Detalhes: `docs/README.md`.
+
+`/auditor` — varre **apenas os arquivos da feature** por vulnerabilidades de segurança (OWASP, isolamento
+`user_id`, Laravel-specific) e, secundariamente, performance; gera relatório em `docs/audits/`, nunca edita
+código, e cataloga correções no `STATUS.md` para o `/backend` aplicar.
 
 ## Configuração do agente
 - `.claude/skills/{papel}/SKILL.md` — fonte única de cada papel (on-demand).

@@ -1,7 +1,7 @@
 # SDD — Spec-Driven Development
 
 Este projeto é construído por **especificação primeiro**: nenhuma linha de código de feature é escrita antes
-de existir uma spec aprovada, e o frontend nunca começa antes de existir um contrato publicado pelo backend.
+de existir uma spec **e** um contrato aprovados pelo `/gerente` (tech-lead).
 
 ## Pipeline
 
@@ -9,40 +9,53 @@ de existir uma spec aprovada, e o frontend nunca começa antes de existir um con
   usuário
     │  requisitos
     ▼
-┌─────────┐  spec        ┌─────────┐  contrato     ┌──────────┐
-│ /gerente│ ───────────▶ │ /backend│ ────────────▶ │ /frontend│
-└─────────┘ docs/specs/  └─────────┘ docs/contracts└──────────┘
-                              │
-                              │ implementação
-                              ▼
-                         ┌─────────┐
-                         │ /tester │  unit tests dos internals
-                         └─────────┘
+┌──────────────┐  spec  +  contrato   ┌──────────┐
+│   /gerente   │ ───────────────────▶ │ /backend │  (em paralelo)
+│  tech-lead   │ docs/specs/          │ /frontend│
+└──────────────┘ docs/contracts/      └─────┬────┘
+                                            │ implementação back
+                                            ▼
+                                  ┌──────────┴──────────┐
+                                  ▼                     ▼
+                             ┌─────────┐           ┌──────────┐
+                             │ /tester │           │ /auditor │
+                             └─────────┘           └──────────┘
+                              unit tests           segurança +
+                              dos internals        performance
+                                                   (docs/audits/)
 ```
 
 ## Artefatos e onde vivem
 
 | Pasta | Dono | Conteúdo |
 |-------|------|----------|
-| `docs/specs/` | `/gerente` | Uma spec por feature: requisitos de negócio, regras, critérios de aceite, contrato preliminar. |
-| `docs/contracts/` | `/backend` | Contrato de API definitivo (endpoints, schemas, tipos TS, erros) — fonte da verdade para o frontend. |
-| `docs/progress/STATUS.md` | `/gerente` | Quadro de acompanhamento de negócio: em que fase cada feature está. |
+| `docs/specs/` | `/gerente` | Uma spec por feature: HU, regras de negócio, critérios de aceite, modelo de dados. **Sem contrato técnico.** |
+| `docs/contracts/` | `/gerente` | Contrato definitivo (endpoints, schemas, tipos TS, erros) — fonte da verdade entre back e front. |
+| `docs/progress/STATUS.md` | `/gerente` (também atualizado por `/auditor`) | Quadro de acompanhamento: em que fase cada feature está. |
+| `docs/audits/` | `/auditor` | Relatório de segurança + performance por feature; correções catalogadas para o `/backend`. |
 | `app/src/{Context}/` | `/backend` | Implementação DDD por bounded context. |
-| `resources/js/pages/{Context}/` | `/frontend` | Páginas Inertia + TypeScript. |
+| `resources/js/pages/{Context}/` | `/frontend` | Páginas Inertia + TypeScript tipado pelo contrato. |
 
 ## Como usar
 
-1. **Começar uma feature:** `/gerente` — faça o levantamento de requisitos. Saída: `docs/specs/{feature}.md`.
-2. **Implementar backend:** `/backend` — passe a spec. Saída: código em `app/src/`, feature tests e `docs/contracts/{feature}.md`.
-3. **Cobrir internals:** `/tester` — unit tests do que o feature test não cobre.
-4. **Construir UI:** `/frontend` — passe o contrato. Saída: páginas tipadas pelo contrato.
+1. **Começar uma feature:** `/gerente` — levante requisitos **e** desenhe o contrato. Saída: `docs/specs/{feature}.md` + `docs/contracts/{feature}.md`.
+2. **Implementar em paralelo:**
+   - `/backend` — implementa contra o contrato. Saída: código em `app/src/`, controllers/rotas Wayfinder, feature tests.
+   - `/frontend` — consome o contrato (com fixtures TS se o back ainda não publicou a rota). Saída: páginas tipadas 1:1 pelo contrato.
+3. **Cobrir e auditar (em paralelo, após o `/backend`):**
+   - `/tester` — unit tests do que o feature test não cobre.
+   - `/auditor` — varre os arquivos da feature por segurança e performance, gera `docs/audits/{feature}-{data}.md`,
+     pergunta se cataloga as correções para o `/backend` e atualiza o `STATUS.md`. Nunca edita código.
 
 Skills são a porta de entrada (você dirige cada fase). Para trabalho pesado e isolado, cada skill pode delegar
 ao subagent correspondente em `.claude/agents/`.
 
 ## Regra de ouro do contrato
-O **contrato** (`docs/contracts/`) é a fronteira entre backend e frontend. Se o backend mudar o contrato,
-atualiza o arquivo; o frontend só confia no que está escrito ali. Tipos TS no frontend devem refletir o contrato 1:1.
+O **contrato** (`docs/contracts/`) é a fronteira entre backend e frontend e tem **um único dono: o `/gerente`**.
+- `/backend` e `/frontend` **leem** o contrato; **não editam**.
+- Divergência (campo inviável, regra ambígua, problema de segurança/performance) → reporte ao `/gerente`, que
+  edita o contrato, registra a revisão (data + motivo) e avisa ambos os lados.
+- Tipos TS no frontend espelham o contrato 1:1.
 
 **Transporte:** o app é **Inertia.js** — leituras chegam como props de página e escritas como redirect + flash;
 o mesmo endpoint responde JSON sob `Accept: application/json`. O contrato descreve o shape dos dados (igual nos dois).

@@ -280,6 +280,13 @@ final class EloquentTransactionRepository implements TransactionRepository
 ## Borda HTTP
 
 **Form Request** (`app/Http/Requests/Transactions/`) — validação de entrada.
+
+Use o Artisan via Sail para criar a request:
+
+```bash
+./vendor/bin/sail artisan make:request Transactions/StoreTransactionRequest
+```
+
 ```php
 <?php
 declare(strict_types=1);
@@ -303,6 +310,13 @@ final class StoreTransactionRequest extends FormRequest
 ```
 
 **Policy** (`app/Policies/Transactions/`) — autorização por propriedade (`user_id`).
+
+Use o Artisan via Sail para criar a policy:
+
+```bash
+./vendor/bin/sail artisan make:policy Transactions/TransactionPolicy
+```
+
 ```php
 <?php
 declare(strict_types=1);
@@ -429,7 +443,7 @@ Route::group([
 });
 ```
 
-**Migration** — sempre `user_id` + índice por usuário.
+**Migration** — sempre `user_id` e/ou `company_id` + índice por usuário.
 ```php
 Schema::create('transactions', function (Blueprint $table) {
     $table->id();
