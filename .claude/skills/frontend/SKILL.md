@@ -27,7 +27,7 @@ Página consumindo contrato: `.claude/skills/frontend/patterns.md`. Copie a form
 1. Leia `docs/contracts/{feature}.md`: shape dos dados, erros (403/422), paginação, estados vazios.
 2. Tipos em `resources/js/types/` espelhando o contrato 1:1.
 3. Página em `resources/js/pages/{Context}/`: props via `usePage()`, forms via `useForm`, rotas via Wayfinder.
-   O layout é aplicado **globalmente** pelo `app.tsx` — a página não define `Page.layout`.
+   Breadcrumbs são definidos na **própria página** via propriedade estática `.layout` (padrão do repo — ver páginas existentes em `resources/js/pages/`). O `app.tsx` usa esse objeto para montar o layout global.
 4. Trate todos os estados: loading, vazio, sucesso e os erros do contrato. Sem URL hardcoded.
 5. `./vendor/bin/sail npm run types:check` (sem erros) e verifique no navegador (caminho feliz + erros).
 6. Divergência com o contrato? **Não improvise** — reporte ao `/backend`.

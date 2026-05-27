@@ -477,6 +477,40 @@ export default function Show({ company, partners }: PageProps) {
                         </div>
                         <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </Link>
+
+                    <Link
+                        href={
+                            companies.invoices.index({
+                                company: company.id,
+                            }).url
+                        }
+                        className="flex items-center justify-between rounded-xl border p-4 hover:bg-muted/50"
+                    >
+                        <div>
+                            <p className="font-medium">Notas Fiscais</p>
+                            <p className="text-sm text-muted-foreground">
+                                Gerencie as notas emitidas
+                            </p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    </Link>
+
+                    <Link
+                        href={
+                            companies.clients.index({
+                                company: company.id,
+                            }).url
+                        }
+                        className="flex items-center justify-between rounded-xl border p-4 hover:bg-muted/50"
+                    >
+                        <div>
+                            <p className="font-medium">Clientes</p>
+                            <p className="text-sm text-muted-foreground">
+                                Gerencie os clientes da empresa
+                            </p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    </Link>
                 </div>
             </div>
         </>
