@@ -10,7 +10,7 @@ Fortify (2FA, passkeys) · PostgreSQL + Redis · Wayfinder (rotas tipadas) · Pe
 1. **Sail sempre.** Nunca `php`/`composer`/`npm`/`artisan` direto — use `./vendor/bin/sail ...`. _(Hook bloqueia o resto.)_
 2. **Isolamento por `user_id`.** Toda tabela de negócio tem FK → users; toda leitura/escrita filtra por `user_id` + Policy.
 3. **Nunca commitar sem aprovação explícita.**
-4. Se usuário usar chave GPG para assinar commit, deixar o comando pronto em /temp para ele fazer manualmente
+4. Se usuário usar chave GPG para assinar commit, deixar o script de commit pronto em `/tmp/commit-{feature}.sh` (temp do sistema Linux, **não** dentro do projeto).
 
 ## DDD (backend)
 - Lógica de negócio em `app/src/{Context}/` (namespace `Src\`), tipicamente `Domain/Application/Infrastructure`.
