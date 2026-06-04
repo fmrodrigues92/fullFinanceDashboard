@@ -653,6 +653,42 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "003 Dashboard",
+      "item": [
+        {
+          "name": "GET /dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard"
+              ]
+            },
+            "description": "Renderiza o dashboard financeiro mocado. Passa a lista de empresas do usuário como prop."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Companies\CompanyController;
 use App\Http\Controllers\Companies\CompanyPartnerController;
 use App\Http\Controllers\Companies\ProlaboreConfigController;
 use App\Http\Controllers\Companies\ProlaboreRecordController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Invoicing\ClientController;
 use App\Http\Controllers\Invoicing\InvoiceController;
 use App\Http\Controllers\Invoicing\SimulationBatchController;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::group(['prefix' => 'companies', 'as' => 'companies.'], function () {
         Route::get('/', [CompanyController::class, 'index'])->name('index');

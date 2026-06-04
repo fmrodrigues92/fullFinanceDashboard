@@ -1,7 +1,7 @@
 # Status do Projeto — fullFinanceDashboard
 
 Quadro de acompanhamento a nível de negócio. Mantido pelo `/gerente`.
-Última atualização: 2026-05-27
+Última atualização: 2026-05-29
 
 ## Legenda de fases
 `spec` → `backend` → `tester` → `frontend` → `done`
@@ -12,9 +12,12 @@ Quadro de acompanhamento a nível de negócio. Mantido pelo `/gerente`.
 |---------|---------|------|------|----------|-------|
 | 001 — Empresa, Sócios e Pró-labore | Companies | `done` | `docs/specs/001-companies.md` | `docs/contracts/001-companies.md` | Entregue 2026-05-26; 72 testes passando; UI validada pelo usuário |
 | 002 — Cadastro de Faturamento | Invoicing | `done` | `docs/specs/002-invoicing.md` | `docs/contracts/002-invoicing.md` | Backend entregue 2026-05-27; 28 feature tests passando (139 total); frontend completo 2026-05-27 — Clientes, Notas Fiscais, Lotes de Simulação; types:check zero erros |
+| 003 — Dashboard Mocado | Dashboard | `frontend` | `docs/specs/003-dashboard.md` | `docs/contracts/003-dashboard.md` | Frontend entregue 2026-05-29; DashboardController criado; 13 cards de competência, 4 seções colapsáveis (DAS, Pró-labore, Faturamento, Gastos); types:check zero erros |
 
 ## Backlog
 - Feature de fechamento de mês (consumirá `prolabore_records` da feature 001)
+- Feature de DAS real (conectará ao dashboard da feature 003; requer cálculo RBT12)
+- Feature de gastos da empresa (conectará ao dashboard da feature 003; nova entidade `company_expenses`)
 - Vínculo de empresa com transações financeiras
 
 ## Decisões de negócio
