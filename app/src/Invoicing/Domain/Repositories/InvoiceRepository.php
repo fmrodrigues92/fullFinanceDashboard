@@ -26,4 +26,10 @@ interface InvoiceRepository
 
     /** @param Invoice[] $invoices */
     public function insertMany(array $invoices): void;
+
+    /**
+     * @param  string[]  $competencias  'YYYY-MM'
+     * @return array<string, array{total: float, notas_emitidas: int, itens: list<array{tipo: string, valor: float, quantidade: int}>}>
+     */
+    public function faturamentoPorCompetencias(int $companyId, array $competencias): array;
 }

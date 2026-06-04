@@ -12,6 +12,7 @@ import { MOCK_DASHBOARD } from '@/fixtures/dashboard';
 import companies from '@/routes/companies';
 import { dashboard } from '@/routes';
 import type { Company } from '@/types/companies';
+import type { FaturamentoData } from '@/types/dashboard';
 import { DasCard } from './dashboard/components/das-card';
 import { FaturamentoCard } from './dashboard/components/faturamento-card';
 import { GastosCard } from './dashboard/components/gastos-card';
@@ -19,8 +20,15 @@ import { ProlaboreCard } from './dashboard/components/prolabore-card';
 import { CompetenciaNav } from './dashboard/components/competencia-nav';
 import { generateMonths, todayMonthKey } from './dashboard/lib/months';
 
+const EMPTY_FATURAMENTO: FaturamentoData = {
+    total: 0,
+    notas_emitidas: 0,
+    itens: [],
+};
+
 interface PageProps {
     companies: Company[];
+    faturamentoPorEmpresa: Record<string, Record<string, FaturamentoData>>;
     [key: string]: unknown;
 }
 
@@ -28,7 +36,10 @@ const TODAY = new Date();
 const MONTHS = generateMonths(TODAY);
 const CURRENT_MONTH_KEY = todayMonthKey(TODAY);
 
-export default function Dashboard({ companies: companyList }: PageProps) {
+export default function Dashboard({
+    companies: companyList,
+    faturamentoPorEmpresa,
+}: PageProps) {
     const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(
         companyList[0]?.id ?? null,
     );
@@ -37,6 +48,16 @@ export default function Dashboard({ companies: companyList }: PageProps) {
     const selectedMonth = useMemo(
         () => MONTHS.find((m) => m.key === selectedMonthKey) ?? MONTHS[6],
         [selectedMonthKey],
+    );
+
+    const currentFaturamento = useMemo(
+        () =>
+            (selectedCompanyId !== null
+                ? faturamentoPorEmpresa[String(selectedCompanyId)]?.[
+                      selectedMonthKey
+                  ]
+                : undefined) ?? EMPTY_FATURAMENTO,
+        [faturamentoPorEmpresa, selectedCompanyId, selectedMonthKey],
     );
 
     if (companyList.length === 0) {
@@ -98,9 +119,8 @@ export default function Dashboard({ companies: companyList }: PageProps) {
                 <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>
-                        Dados simulados — valores fictícios para visualização do
-                        layout. Os dados reais serão conectados em versões
-                        futuras.
+                        DAS, Pró-labore e Gastos ainda usam valores fictícios.
+                        Faturamento já exibe dados reais.
                     </span>
                 </div>
 
@@ -115,7 +135,7 @@ export default function Dashboard({ companies: companyList }: PageProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <DasCard das={MOCK_DASHBOARD.das} />
                     <ProlaboreCard prolabore={MOCK_DASHBOARD.prolabore} />
-                    <FaturamentoCard faturamento={MOCK_DASHBOARD.faturamento} />
+                    <FaturamentoCard faturamento={currentFaturamento} />
                     <GastosCard gastos={MOCK_DASHBOARD.gastos} />
                 </div>
             </div>

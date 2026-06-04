@@ -55,4 +55,6 @@ export interface DashboardMockData {
 
 export interface DashboardProps {
     companies: Company[];
+    /** companyId (string) → competencia 'YYYY-MM' → dados reais de faturamento */
+    faturamentoPorEmpresa: Record<string, Record<string, FaturamentoData>>;
 }

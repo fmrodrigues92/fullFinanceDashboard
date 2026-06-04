@@ -104,6 +104,51 @@ final class EloquentInvoiceRepository implements InvoiceRepository
             ->all();
     }
 
+    public function faturamentoPorCompetencias(int $companyId, array $competencias): array
+    {
+        $result = [];
+        foreach ($competencias as $comp) {
+            $result[$comp] = ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => []];
+        }
+
+        if (empty($competencias)) {
+            return $result;
+        }
+
+        $minDate = min($competencias).'-01';
+        $maxDate = (new DateTimeImmutable(max($competencias).'-01'))
+            ->modify('first day of next month')
+            ->format('Y-m-d');
+
+        $rows = InvoiceModel::query()
+            ->selectRaw("TO_CHAR(data_emissao, 'YYYY-MM') as competencia, tipo, SUM(valor_brl::numeric) as total, COUNT(*) as quantidade")
+            ->where('company_id', $companyId)
+            ->where('is_simulation', false)
+            ->whereNull('deleted_at')
+            ->where('data_emissao', '>=', $minDate)
+            ->where('data_emissao', '<', $maxDate)
+            ->groupByRaw("TO_CHAR(data_emissao, 'YYYY-MM'), tipo")
+            ->get();
+
+        foreach ($rows as $row) {
+            $comp = $row->competencia;
+            if (! isset($result[$comp])) {
+                continue;
+            }
+            $valor = (float) $row->total;
+            $qtd = (int) $row->quantidade;
+            $result[$comp]['total'] += $valor;
+            $result[$comp]['notas_emitidas'] += $qtd;
+            $result[$comp]['itens'][] = [
+                'tipo' => $row->tipo,
+                'valor' => $valor,
+                'quantidade' => $qtd,
+            ];
+        }
+
+        return $result;
+    }
+
     /** @param Invoice[] $invoices */
     public function insertMany(array $invoices): void
     {
