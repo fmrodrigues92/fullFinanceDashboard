@@ -15,10 +15,10 @@ use Inertia\Response as InertiaResponse;
 use Src\Companies\Infrastructure\Persistence\CompanyModel;
 use Src\Invoicing\Application\DTOs\CreateClientInput;
 use Src\Invoicing\Application\DTOs\UpdateClientInput;
-use Src\Invoicing\Application\UseCases\CreateClientUseCase;
-use Src\Invoicing\Application\UseCases\DeleteClientUseCase;
-use Src\Invoicing\Application\UseCases\ListClientsPaginatedUseCase;
-use Src\Invoicing\Application\UseCases\UpdateClientUseCase;
+use Src\Invoicing\Application\UseCases\Client\CreateClientUseCase;
+use Src\Invoicing\Application\UseCases\Client\DeleteClientUseCase;
+use Src\Invoicing\Application\UseCases\Client\ListClientsPaginatedUseCase;
+use Src\Invoicing\Application\UseCases\Client\UpdateClientUseCase;
 use Src\Invoicing\Domain\Client;
 use Src\Invoicing\Infrastructure\Persistence\ClientModel;
 

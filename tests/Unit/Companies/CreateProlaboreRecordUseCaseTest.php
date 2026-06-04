@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Mockery\MockInterface;
 use Src\Companies\Application\DTOs\CreateProlaboreRecordInput;
-use Src\Companies\Application\UseCases\CreateProlaboreRecordUseCase;
+use Src\Companies\Application\UseCases\ProlaboreRecord\CreateProlaboreRecordUseCase;
 use Src\Companies\Domain\CompanyPartner;
 use Src\Companies\Domain\Exceptions\PartnerNotBelongsToCompany;
 use Src\Companies\Domain\ProlaboreRecord;

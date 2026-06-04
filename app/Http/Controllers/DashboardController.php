@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Src\Companies\Application\UseCases\ListCompaniesUseCase;
+use Src\Companies\Application\UseCases\Company\ListCompaniesUseCase;
 use Src\Companies\Domain\Company;
 
 final class DashboardController extends Controller

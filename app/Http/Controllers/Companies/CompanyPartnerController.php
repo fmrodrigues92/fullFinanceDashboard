@@ -11,7 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Src\Companies\Application\DTOs\PartnerData;
 use Src\Companies\Application\DTOs\SyncPartnersInput;
-use Src\Companies\Application\UseCases\SyncPartnersUseCase;
+use Src\Companies\Application\UseCases\Partner\SyncPartnersUseCase;
 use Src\Companies\Infrastructure\Persistence\CompanyModel;
 
 final class CompanyPartnerController extends Controller

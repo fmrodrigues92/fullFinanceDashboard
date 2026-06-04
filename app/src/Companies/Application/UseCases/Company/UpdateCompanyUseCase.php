@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Companies\Application\UseCases;
+namespace Src\Companies\Application\UseCases\Company;
 
 use Src\Companies\Application\DTOs\UpdateCompanyInput;
 use Src\Companies\Domain\Company;

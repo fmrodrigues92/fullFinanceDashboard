@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Mockery\MockInterface;
 use Src\Companies\Application\DTOs\PartnerData;
 use Src\Companies\Application\DTOs\SyncPartnersInput;
-use Src\Companies\Application\UseCases\SyncPartnersUseCase;
+use Src\Companies\Application\UseCases\Partner\SyncPartnersUseCase;
 use Src\Companies\Domain\Exceptions\DuplicateCpfInPartnerList;
 use Src\Companies\Domain\Exceptions\InvalidCpf;
 use Src\Companies\Domain\Exceptions\ParticipacaoSumNotHundred;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Invoicing\Application\UseCases;
+namespace Src\Invoicing\Application\UseCases\SimulationBatch;
 
 use DateTimeImmutable;
 use Src\Invoicing\Application\DTOs\CreateSimulationBatchInput;

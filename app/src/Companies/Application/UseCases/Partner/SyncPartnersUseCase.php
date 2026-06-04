@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Companies\Application\UseCases;
+namespace Src\Companies\Application\UseCases\Partner;
 
 use Src\Companies\Application\DTOs\SyncPartnersInput;
 use Src\Companies\Domain\CompanyPartner;

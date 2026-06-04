@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Mockery\MockInterface;
 use Src\Invoicing\Application\TransactionManager;
-use Src\Invoicing\Application\UseCases\DeleteClientUseCase;
+use Src\Invoicing\Application\UseCases\Client\DeleteClientUseCase;
 use Src\Invoicing\Domain\Client;
 use Src\Invoicing\Domain\Repositories\ClientRepository;
 

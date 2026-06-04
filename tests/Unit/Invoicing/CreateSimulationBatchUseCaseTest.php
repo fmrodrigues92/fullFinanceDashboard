@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Mockery\MockInterface;
 use Src\Invoicing\Application\DTOs\CreateSimulationBatchInput;
 use Src\Invoicing\Application\TransactionManager;
-use Src\Invoicing\Application\UseCases\CreateSimulationBatchUseCase;
+use Src\Invoicing\Application\UseCases\SimulationBatch\CreateSimulationBatchUseCase;
 use Src\Invoicing\Domain\Exceptions\SimulationConflict;
 use Src\Invoicing\Domain\Invoice;
 use Src\Invoicing\Domain\Repositories\InvoiceRepository;

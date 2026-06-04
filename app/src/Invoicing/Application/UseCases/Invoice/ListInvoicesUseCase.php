@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Invoicing\Application\UseCases;
+namespace Src\Invoicing\Application\UseCases\Invoice;
 
 use Src\Invoicing\Application\DTOs\ListInvoicesFilter;
 use Src\Invoicing\Application\DTOs\PaginatedResult;
