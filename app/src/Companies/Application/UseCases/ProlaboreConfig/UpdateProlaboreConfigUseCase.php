@@ -20,6 +20,6 @@ final readonly class UpdateProlaboreConfigUseCase
             throw new \RuntimeException('Configuração de pró-labore não encontrada.');
         }
 
-        return $this->repository->save($config->update($input->valor));
+        return $this->repository->save($config->update($input->valor, $input->tipo));
     }
 }

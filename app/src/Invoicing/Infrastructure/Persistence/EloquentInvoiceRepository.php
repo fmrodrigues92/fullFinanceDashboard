@@ -149,6 +149,112 @@ final class EloquentInvoiceRepository implements InvoiceRepository
         return $result;
     }
 
+    public function faturamentoPorCompetenciasMultiEmpresa(array $companyIds, array $competencias): array
+    {
+        $empty = ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => [], 'is_simulado' => false];
+        $result = [];
+
+        if (empty($companyIds) || empty($competencias)) {
+            return $result;
+        }
+
+        foreach ($companyIds as $cid) {
+            foreach ($competencias as $comp) {
+                $result[(string) $cid][$comp] = $empty;
+            }
+        }
+
+        $minDate = min($competencias).'-01';
+        $maxDate = (new DateTimeImmutable(max($competencias).'-01'))
+            ->modify('first day of next month')
+            ->format('Y-m-d');
+
+        $rows = InvoiceModel::query()
+            ->selectRaw("company_id, is_simulation, TO_CHAR(data_emissao, 'YYYY-MM') as competencia, tipo, SUM(valor_brl::numeric) as total, COUNT(*) as quantidade")
+            ->whereIn('company_id', $companyIds)
+            ->whereNull('deleted_at')
+            ->where('data_emissao', '>=', $minDate)
+            ->where('data_emissao', '<', $maxDate)
+            ->groupByRaw("company_id, is_simulation, TO_CHAR(data_emissao, 'YYYY-MM'), tipo")
+            ->get();
+
+        // Acumula real e simulado separadamente; ao final, real tem precedência
+        $real = [];
+        $sim = [];
+
+        foreach ($rows as $row) {
+            $cid = (string) $row->company_id;
+            $comp = (string) $row->competencia;
+            if (! isset($result[$cid][$comp])) {
+                continue;
+            }
+            $valor = (float) $row->total;
+            $qtd = (int) $row->quantidade;
+            $item = ['tipo' => $row->tipo, 'valor' => $valor, 'quantidade' => $qtd];
+
+            if ((bool) $row->is_simulation) {
+                $sim[$cid][$comp]['total'] = ($sim[$cid][$comp]['total'] ?? 0.0) + $valor;
+                $sim[$cid][$comp]['notas_emitidas'] = ($sim[$cid][$comp]['notas_emitidas'] ?? 0) + $qtd;
+                $sim[$cid][$comp]['itens'][] = $item;
+            } else {
+                $real[$cid][$comp]['total'] = ($real[$cid][$comp]['total'] ?? 0.0) + $valor;
+                $real[$cid][$comp]['notas_emitidas'] = ($real[$cid][$comp]['notas_emitidas'] ?? 0) + $qtd;
+                $real[$cid][$comp]['itens'][] = $item;
+            }
+        }
+
+        foreach ($companyIds as $cid) {
+            $cid = (string) $cid;
+            foreach ($competencias as $comp) {
+                if (isset($real[$cid][$comp]) && $real[$cid][$comp]['total'] > 0.0) {
+                    $result[$cid][$comp] = array_merge($real[$cid][$comp], ['is_simulado' => false]);
+                } elseif (isset($sim[$cid][$comp]) && $sim[$cid][$comp]['total'] > 0.0) {
+                    $result[$cid][$comp] = array_merge($sim[$cid][$comp], ['is_simulado' => true]);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function faturamentoSummaryForCompanies(
+        array $companyIds,
+        DateTimeImmutable $from,
+        DateTimeImmutable $to,
+    ): array {
+        if (empty($companyIds)) {
+            return [];
+        }
+
+        $rows = InvoiceModel::query()
+            ->selectRaw("company_id, is_simulation, TO_CHAR(data_emissao, 'YYYY-MM') as competencia, SUM(valor_brl::numeric) as total")
+            ->whereIn('company_id', $companyIds)
+            ->whereNull('deleted_at')
+            ->where('data_emissao', '>=', $from->format('Y-m-d'))
+            ->where('data_emissao', '<', $to->format('Y-m-d'))
+            ->groupByRaw("company_id, is_simulation, TO_CHAR(data_emissao, 'YYYY-MM')")
+            ->get();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $cid = (int) $row->company_id;
+            $comp = (string) $row->competencia;
+            $total = (float) $row->total;
+
+            if (! isset($result[$cid][$comp])) {
+                $result[$cid][$comp] = ['real' => 0.0, 'simulado' => 0.0];
+            }
+
+            if ((bool) $row->is_simulation) {
+                $result[$cid][$comp]['simulado'] += $total;
+            } else {
+                $result[$cid][$comp]['real'] += $total;
+            }
+        }
+
+        return $result;
+    }
+
     /** @param Invoice[] $invoices */
     public function insertMany(array $invoices): void
     {

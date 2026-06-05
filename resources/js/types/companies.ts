@@ -32,6 +32,7 @@ export interface ProlaboreConfig {
     company_id: number;
     partner_id: number;
     user_id: number;
+    tipo: 'fixo' | 'percentual';
     valor: number;
 }
 

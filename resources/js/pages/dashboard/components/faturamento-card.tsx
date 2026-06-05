@@ -23,7 +23,14 @@ export function FaturamentoCard({ faturamento }: Props) {
         <Collapsible open={open} onOpenChange={setOpen}>
             <Card>
                 <CardHeader className="pb-0">
-                    <CardTitle className="text-base">Faturamento</CardTitle>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-base">Faturamento</CardTitle>
+                        {faturamento.is_simulado && (
+                            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                Estimado
+                            </span>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     <div className="flex items-end justify-between">

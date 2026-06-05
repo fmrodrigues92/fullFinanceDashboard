@@ -32,6 +32,7 @@ final readonly class CreateProlaboreConfigUseCase
             partnerId: $input->partnerId,
             userId: $input->userId,
             valor: $input->valor,
+            tipo: $input->tipo,
         );
 
         return $this->configRepository->save($config);

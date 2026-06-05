@@ -16,6 +16,7 @@ final class ProlaboreRecord
         public readonly DateTimeImmutable $competencia,
         public readonly float $valor,
         public readonly ?string $observacao,
+        public readonly string $origem, // 'manual' | 'automatico'
     ) {}
 
     public static function create(
@@ -25,6 +26,7 @@ final class ProlaboreRecord
         DateTimeImmutable $competencia,
         float $valor,
         ?string $observacao = null,
+        string $origem = 'manual',
     ): self {
         return new self(
             id: null,
@@ -34,6 +36,7 @@ final class ProlaboreRecord
             competencia: $competencia,
             valor: $valor,
             observacao: $observacao,
+            origem: $origem,
         );
     }
 
@@ -45,6 +48,7 @@ final class ProlaboreRecord
         DateTimeImmutable $competencia,
         float $valor,
         ?string $observacao,
+        string $origem = 'manual',
     ): self {
         return new self(
             id: $id,
@@ -54,6 +58,7 @@ final class ProlaboreRecord
             competencia: $competencia,
             valor: $valor,
             observacao: $observacao,
+            origem: $origem,
         );
     }
 
@@ -70,6 +75,7 @@ final class ProlaboreRecord
             competencia: $competencia,
             valor: $valor,
             observacao: $observacao,
+            origem: $this->origem, // preserva origem ao editar
         );
     }
 }

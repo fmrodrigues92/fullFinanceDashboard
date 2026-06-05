@@ -36,16 +36,61 @@ interface PageProps {
 
 interface CreateForm {
     partner_id: string;
+    tipo: 'fixo' | 'percentual';
     valor: string;
 }
 
 interface EditForm {
+    tipo: 'fixo' | 'percentual';
     valor: string;
 }
 
 function partnerName(partners: CompanyPartner[], partnerId: number): string {
     return (
         partners.find((p) => p.id === partnerId)?.nome ?? `Sócio #${partnerId}`
+    );
+}
+
+function formatValor(config: ProlaboreConfig): string {
+    if (config.tipo === 'percentual') {
+        return `${config.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    }
+    return config.valor.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    });
+}
+
+function ValorInput({
+    tipo,
+    value,
+    onChange,
+    id,
+}: {
+    tipo: 'fixo' | 'percentual';
+    value: string;
+    onChange: (v: string) => void;
+    id: string;
+}) {
+    return (
+        <div className="flex items-center gap-2">
+            {tipo === 'fixo' && (
+                <span className="text-sm text-muted-foreground">R$</span>
+            )}
+            <Input
+                id={id}
+                type="number"
+                min="0.01"
+                step="0.01"
+                max={tipo === 'percentual' ? 100 : undefined}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={tipo === 'percentual' ? '28.00' : '3000.00'}
+            />
+            {tipo === 'percentual' && (
+                <span className="text-sm text-muted-foreground">%</span>
+            )}
+        </div>
     );
 }
 
@@ -60,8 +105,12 @@ export default function ProlaboreConfigsIndex({
     );
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const createForm = useForm<CreateForm>({ partner_id: '', valor: '' });
-    const editForm = useForm<EditForm>({ valor: '' });
+    const createForm = useForm<CreateForm>({
+        partner_id: '',
+        tipo: 'fixo',
+        valor: '',
+    });
+    const editForm = useForm<EditForm>({ tipo: 'fixo', valor: '' });
 
     const handleCreate = (e: FormEvent) => {
         e.preventDefault();
@@ -78,7 +127,10 @@ export default function ProlaboreConfigsIndex({
     };
 
     const openEdit = (config: ProlaboreConfig) => {
-        editForm.setData({ valor: String(config.valor) });
+        editForm.setData({
+            tipo: config.tipo,
+            valor: String(config.valor),
+        });
         setEditingConfig(config);
     };
 
@@ -181,23 +233,54 @@ export default function ProlaboreConfigsIndex({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="create-valor">
-                                        Valor (R$)
-                                    </Label>
-                                    <Input
-                                        id="create-valor"
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        value={createForm.data.valor}
-                                        onChange={(e) =>
+                                    <Label>Tipo</Label>
+                                    <Select
+                                        value={createForm.data.tipo}
+                                        onValueChange={(v) => {
                                             createForm.setData(
-                                                'valor',
-                                                e.target.value,
-                                            )
-                                        }
-                                        placeholder="3000.00"
+                                                'tipo',
+                                                v as 'fixo' | 'percentual',
+                                            );
+                                            createForm.setData('valor', '');
+                                        }}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="fixo">
+                                                Valor fixo (R$)
+                                            </SelectItem>
+                                            <SelectItem value="percentual">
+                                                Percentual do faturamento (%)
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError
+                                        message={createForm.errors.tipo}
                                     />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="create-valor">
+                                        {createForm.data.tipo === 'percentual'
+                                            ? 'Percentual (%)'
+                                            : 'Valor mensal (R$)'}
+                                    </Label>
+                                    <ValorInput
+                                        id="create-valor"
+                                        tipo={createForm.data.tipo}
+                                        value={createForm.data.valor}
+                                        onChange={(v) =>
+                                            createForm.setData('valor', v)
+                                        }
+                                    />
+                                    {createForm.data.tipo === 'percentual' && (
+                                        <p className="text-xs text-muted-foreground">
+                                            Ex.: 28 = 28% do faturamento bruto
+                                            do mês
+                                        </p>
+                                    )}
                                     <InputError
                                         message={createForm.errors.valor}
                                     />
@@ -228,7 +311,7 @@ export default function ProlaboreConfigsIndex({
                         Configuração de Pró-labore
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Valor mensal de pró-labore por sócio
+                        Valor ou percentual mensal de pró-labore por sócio
                     </p>
                 </div>
 
@@ -251,8 +334,11 @@ export default function ProlaboreConfigsIndex({
                                     <th className="px-4 py-3 text-left font-medium">
                                         Sócio
                                     </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Tipo
+                                    </th>
                                     <th className="px-4 py-3 text-right font-medium">
-                                        Valor Mensal
+                                        Valor
                                     </th>
                                     <th className="px-4 py-3 text-right font-medium">
                                         Ações
@@ -271,14 +357,13 @@ export default function ProlaboreConfigsIndex({
                                                 config.partner_id,
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-right">
-                                            {config.valor.toLocaleString(
-                                                'pt-BR',
-                                                {
-                                                    style: 'currency',
-                                                    currency: 'BRL',
-                                                },
-                                            )}
+                                        <td className="px-4 py-3 text-muted-foreground">
+                                            {config.tipo === 'percentual'
+                                                ? '% faturamento'
+                                                : 'Valor fixo'}
+                                        </td>
+                                        <td className="px-4 py-3 text-right font-medium">
+                                            {formatValor(config)}
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-2">
@@ -322,27 +407,82 @@ export default function ProlaboreConfigsIndex({
                                                             className="space-y-4"
                                                         >
                                                             <div className="grid gap-2">
-                                                                <Label htmlFor="edit-valor">
-                                                                    Valor (R$)
+                                                                <Label>
+                                                                    Tipo
                                                                 </Label>
-                                                                <Input
+                                                                <Select
+                                                                    value={
+                                                                        editForm
+                                                                            .data
+                                                                            .tipo
+                                                                    }
+                                                                    onValueChange={(
+                                                                        v,
+                                                                    ) => {
+                                                                        editForm.setData(
+                                                                            'tipo',
+                                                                            v as
+                                                                                | 'fixo'
+                                                                                | 'percentual',
+                                                                        );
+                                                                        editForm.setData(
+                                                                            'valor',
+                                                                            '',
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <SelectTrigger>
+                                                                        <SelectValue />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="fixo">
+                                                                            Valor
+                                                                            fixo
+                                                                            (R$)
+                                                                        </SelectItem>
+                                                                        <SelectItem value="percentual">
+                                                                            Percentual
+                                                                            do
+                                                                            faturamento
+                                                                            (%)
+                                                                        </SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <InputError
+                                                                    message={
+                                                                        editForm
+                                                                            .errors
+                                                                            .tipo
+                                                                    }
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <Label htmlFor="edit-valor">
+                                                                    {editForm
+                                                                        .data
+                                                                        .tipo ===
+                                                                    'percentual'
+                                                                        ? 'Percentual (%)'
+                                                                        : 'Valor mensal (R$)'}
+                                                                </Label>
+                                                                <ValorInput
                                                                     id="edit-valor"
-                                                                    type="number"
-                                                                    min="0.01"
-                                                                    step="0.01"
+                                                                    tipo={
+                                                                        editForm
+                                                                            .data
+                                                                            .tipo
+                                                                    }
                                                                     value={
                                                                         editForm
                                                                             .data
                                                                             .valor
                                                                     }
                                                                     onChange={(
-                                                                        e,
+                                                                        v,
                                                                     ) =>
                                                                         editForm.setData(
                                                                             'valor',
-                                                                            e
-                                                                                .target
-                                                                                .value,
+                                                                            v,
                                                                         )
                                                                     }
                                                                 />

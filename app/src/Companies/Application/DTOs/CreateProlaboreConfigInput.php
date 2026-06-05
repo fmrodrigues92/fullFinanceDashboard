@@ -11,5 +11,6 @@ final readonly class CreateProlaboreConfigInput
         public int $partnerId,
         public int $userId,
         public float $valor,
+        public string $tipo = 'fixo',
     ) {}
 }

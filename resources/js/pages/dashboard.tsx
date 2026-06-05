@@ -12,7 +12,10 @@ import { MOCK_DASHBOARD } from '@/fixtures/dashboard';
 import companies from '@/routes/companies';
 import { dashboard } from '@/routes';
 import type { Company } from '@/types/companies';
-import type { FaturamentoData } from '@/types/dashboard';
+import type {
+    FaturamentoData,
+    ProlaboreDashboardData,
+} from '@/types/dashboard';
 import { DasCard } from './dashboard/components/das-card';
 import { FaturamentoCard } from './dashboard/components/faturamento-card';
 import { GastosCard } from './dashboard/components/gastos-card';
@@ -24,11 +27,20 @@ const EMPTY_FATURAMENTO: FaturamentoData = {
     total: 0,
     notas_emitidas: 0,
     itens: [],
+    is_simulado: false,
+};
+
+const EMPTY_PROLABORE: ProlaboreDashboardData = {
+    total: 0,
+    tipo: 'sem_faturamento',
+    fator_r: null,
+    socios: [],
 };
 
 interface PageProps {
     companies: Company[];
     faturamentoPorEmpresa: Record<string, Record<string, FaturamentoData>>;
+    prolaborePorEmpresa: Record<string, Record<string, ProlaboreDashboardData>>;
     [key: string]: unknown;
 }
 
@@ -39,6 +51,7 @@ const CURRENT_MONTH_KEY = todayMonthKey(TODAY);
 export default function Dashboard({
     companies: companyList,
     faturamentoPorEmpresa,
+    prolaborePorEmpresa,
 }: PageProps) {
     const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(
         companyList[0]?.id ?? null,
@@ -58,6 +71,16 @@ export default function Dashboard({
                   ]
                 : undefined) ?? EMPTY_FATURAMENTO,
         [faturamentoPorEmpresa, selectedCompanyId, selectedMonthKey],
+    );
+
+    const currentProlabore = useMemo(
+        () =>
+            (selectedCompanyId !== null
+                ? prolaborePorEmpresa[String(selectedCompanyId)]?.[
+                      selectedMonthKey
+                  ]
+                : undefined) ?? EMPTY_PROLABORE,
+        [prolaborePorEmpresa, selectedCompanyId, selectedMonthKey],
     );
 
     if (companyList.length === 0) {
@@ -119,8 +142,8 @@ export default function Dashboard({
                 <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>
-                        DAS, Pró-labore e Gastos ainda usam valores fictícios.
-                        Faturamento já exibe dados reais.
+                        DAS e Gastos ainda usam valores fictícios. Faturamento e
+                        Pró-labore já exibem dados reais.
                     </span>
                 </div>
 
@@ -134,7 +157,7 @@ export default function Dashboard({
                 {/* Cards de resumo financeiro */}
                 <div className="grid gap-4 md:grid-cols-2">
                     <DasCard das={MOCK_DASHBOARD.das} />
-                    <ProlaboreCard prolabore={MOCK_DASHBOARD.prolabore} />
+                    <ProlaboreCard prolabore={currentProlabore} />
                     <FaturamentoCard faturamento={currentFaturamento} />
                     <GastosCard gastos={MOCK_DASHBOARD.gastos} />
                 </div>

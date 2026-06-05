@@ -1,40 +1,72 @@
 #!/usr/bin/env python3
 """PreToolUse guard (matcher: Bash).
 
-Bloqueia chamadas diretas a binários que devem rodar via Laravel Sail.
-Lê o JSON do PreToolUse no stdin; exit 2 bloqueia a ferramenta e mostra a mensagem ao agente.
+Regras:
+1. Bloqueia binários que devem rodar via Sail (php, composer, npm, artisan …).
+2. Bloqueia comandos que apagam/resetam o banco de dados:
+   migrate:fresh, migrate:reset, db:wipe — mesmo quando chamados via Sail.
 """
 import json
 import re
 import sys
 
-BANNED = {"php", "composer", "npm", "npx", "artisan", "pint", "pest", "phpunit", "yarn", "pnpm"}
+BANNED_BINS = {"php", "composer", "npm", "npx", "artisan", "pint", "pest", "phpunit", "yarn", "pnpm"}
+
+# Subcomandos artisan que destroem dados do banco
+DB_WIPE_CMDS = {"migrate:fresh", "migrate:reset", "db:wipe"}
+
 SEPARATORS = re.compile(r"&&|\|\||;|\|")
 ENV_ASSIGN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+
+
+def tokens_of(segment: str) -> list[str]:
+    parts = segment.strip().split()
+    i = 0
+    while i < len(parts) and ENV_ASSIGN.match(parts[i]):
+        i += 1
+    return parts[i:]
+
+
+def is_db_wipe(tokens: list[str]) -> bool:
+    """Detecta se o segmento chama um subcomando artisan que limpa o banco."""
+    for wipe_cmd in DB_WIPE_CMDS:
+        if wipe_cmd in tokens:
+            return True
+    return False
 
 
 def main() -> int:
     try:
         data = json.load(sys.stdin)
     except Exception:
-        return 0  # entrada inesperada: não bloqueia
+        return 0
 
     command = data.get("tool_input", {}).get("command", "")
     if not command:
         return 0
 
     for segment in SEPARATORS.split(command):
-        tokens = segment.strip().split()
-        i = 0
-        while i < len(tokens) and ENV_ASSIGN.match(tokens[i]):
-            i += 1  # ignora atribuições de env iniciais (FOO=bar cmd)
-        if i >= len(tokens):
+        tokens = tokens_of(segment)
+        if not tokens:
             continue
-        base = tokens[i].split("/")[-1]
-        if base in BANNED:
+
+        base = tokens[0].split("/")[-1]
+
+        # Regra 1 — binário proibido sem Sail
+        if base in BANNED_BINS:
             sys.stderr.write(
                 f"BLOQUEADO: '{base}' deve rodar via Sail.\n"
                 f"Use: ./vendor/bin/sail {base} ...\n"
+            )
+            return 2
+
+        # Regra 2 — comandos que apagam o banco (mesmo via Sail)
+        if is_db_wipe(tokens):
+            matched = next(c for c in DB_WIPE_CMDS if c in tokens)
+            sys.stderr.write(
+                f"BLOQUEADO: '{matched}' destrói dados do banco e está proibido.\n"
+                "Para recriar o schema em teste use: ./vendor/bin/sail artisan migrate:fresh --env=testing\n"
+                "Se precisar mesmo assim, peça aprovação explícita ao usuário antes de executar.\n"
             )
             return 2
 

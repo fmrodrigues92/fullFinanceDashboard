@@ -10,5 +10,6 @@ final readonly class UpdateProlaboreConfigInput
         public int $configId,
         public int $companyId,
         public float $valor,
+        public string $tipo = 'fixo',
     ) {}
 }

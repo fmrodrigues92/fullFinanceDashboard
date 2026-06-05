@@ -13,6 +13,8 @@ final class StoreProlaboreConfigRequest extends FormRequest
     {
         $companyId = $this->route('company')?->id;
 
+        $isPercentual = $this->input('tipo') === 'percentual';
+
         return [
             'partner_id' => [
                 'required',
@@ -20,7 +22,13 @@ final class StoreProlaboreConfigRequest extends FormRequest
                 Rule::unique('prolabore_configs', 'partner_id')
                     ->where('company_id', $companyId),
             ],
-            'valor' => ['required', 'numeric', 'gt:0'],
+            'tipo' => ['required', Rule::in(['fixo', 'percentual'])],
+            'valor' => array_filter([
+                'required',
+                'numeric',
+                'gt:0',
+                $isPercentual ? 'max:100' : null,
+            ]),
         ];
     }
 }

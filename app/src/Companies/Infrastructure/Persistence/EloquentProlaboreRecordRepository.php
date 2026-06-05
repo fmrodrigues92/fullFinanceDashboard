@@ -19,6 +19,7 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
             'competencia' => $record->competencia->format('Y-m-d'),
             'valor' => $record->valor,
             'observacao' => $record->observacao,
+            'origem' => $record->origem,
         ];
 
         if ($record->id !== null) {
@@ -69,6 +70,45 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
             ->delete();
     }
 
+    public function existsForPartnerAndCompetencia(int $companyId, int $partnerId, DateTimeImmutable $competencia): bool
+    {
+        return ProlaboreRecordModel::query()
+            ->where('company_id', $companyId)
+            ->where('partner_id', $partnerId)
+            ->where('competencia', $competencia->format('Y-m-d'))
+            ->exists();
+    }
+
+    /**
+     * @param  int[]  $companyIds
+     * @return array<int, array<string, array<int, array{valor: float, origem: string}>>>
+     */
+    public function dashboardRecordsForCompanies(array $companyIds, DateTimeImmutable $from, DateTimeImmutable $to): array
+    {
+        if (empty($companyIds)) {
+            return [];
+        }
+
+        $rows = ProlaboreRecordModel::query()
+            ->whereIn('company_id', $companyIds)
+            ->where('competencia', '>=', $from->format('Y-m-d'))
+            ->where('competencia', '<', $to->format('Y-m-d'))
+            ->get(['company_id', 'partner_id', 'competencia', 'valor', 'origem']);
+
+        $result = [];
+        foreach ($rows as $row) {
+            $cid = (int) $row->company_id;
+            $pid = (int) $row->partner_id;
+            $comp = substr((string) $row->competencia, 0, 7); // YYYY-MM
+            $result[$cid][$comp][$pid] = [
+                'valor' => (float) $row->valor,
+                'origem' => (string) $row->origem,
+            ];
+        }
+
+        return $result;
+    }
+
     private function toDomain(ProlaboreRecordModel $m): ProlaboreRecord
     {
         return ProlaboreRecord::fromPersistence(
@@ -79,6 +119,7 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
             competencia: new DateTimeImmutable((string) $m->competencia),
             valor: (float) $m->valor,
             observacao: $m->observacao !== null ? (string) $m->observacao : null,
+            origem: (string) ($m->origem ?? 'manual'),
         );
     }
 }

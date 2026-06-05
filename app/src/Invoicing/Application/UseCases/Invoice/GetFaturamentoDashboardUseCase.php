@@ -11,11 +11,17 @@ final readonly class GetFaturamentoDashboardUseCase
     public function __construct(private InvoiceRepository $repository) {}
 
     /**
+     * @param  int[]  $companyIds
      * @param  string[]  $competencias  'YYYY-MM'
-     * @return array<string, array{total: float, notas_emitidas: int, itens: list<array{tipo: string, valor: float, quantidade: int}>}>
+     * @return array<string, array<string, array{total: float, notas_emitidas: int, itens: list<array{tipo: string, valor: float, quantidade: int}>}>>
+     *                                                                                                                                                 [companyId][YYYY-MM] => data
      */
-    public function __invoke(int $companyId, array $competencias): array
+    public function __invoke(array $companyIds, array $competencias): array
     {
-        return $this->repository->faturamentoPorCompetencias($companyId, $competencias);
+        if (empty($companyIds) || empty($competencias)) {
+            return [];
+        }
+
+        return $this->repository->faturamentoPorCompetenciasMultiEmpresa($companyIds, $competencias);
     }
 }

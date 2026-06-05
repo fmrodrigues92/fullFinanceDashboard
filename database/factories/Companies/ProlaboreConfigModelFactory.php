@@ -20,6 +20,7 @@ final class ProlaboreConfigModelFactory extends Factory
             'company_id' => CompanyModel::factory(),
             'partner_id' => CompanyPartnerModel::factory(),
             'user_id' => User::factory(),
+            'tipo' => 'fixo',
             'valor' => fake()->randomFloat(2, 1000, 10000),
         ];
     }

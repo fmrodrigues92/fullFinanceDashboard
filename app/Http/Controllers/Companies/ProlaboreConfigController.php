@@ -14,9 +14,9 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Src\Companies\Application\DTOs\CreateProlaboreConfigInput;
 use Src\Companies\Application\DTOs\UpdateProlaboreConfigInput;
+use Src\Companies\Application\UseCases\Partner\ListCompanyPartnersUseCase;
 use Src\Companies\Application\UseCases\ProlaboreConfig\CreateProlaboreConfigUseCase;
 use Src\Companies\Application\UseCases\ProlaboreConfig\DeleteProlaboreConfigUseCase;
-use Src\Companies\Application\UseCases\Partner\ListCompanyPartnersUseCase;
 use Src\Companies\Application\UseCases\ProlaboreConfig\ListProlaboreConfigsUseCase;
 use Src\Companies\Application\UseCases\ProlaboreConfig\UpdateProlaboreConfigUseCase;
 use Src\Companies\Domain\CompanyPartner;
@@ -70,6 +70,7 @@ final class ProlaboreConfigController extends Controller
                 partnerId: (int) $data['partner_id'],
                 userId: (int) $request->user()->id,
                 valor: (float) $data['valor'],
+                tipo: (string) $data['tipo'],
             ));
         } catch (\DomainException $e) {
             return $request->expectsJson()
@@ -101,6 +102,7 @@ final class ProlaboreConfigController extends Controller
             configId: (int) $config->id,
             companyId: (int) $company->id,
             valor: (float) $data['valor'],
+            tipo: (string) $data['tipo'],
         ));
 
         if ($request->expectsJson()) {
@@ -139,6 +141,7 @@ final class ProlaboreConfigController extends Controller
             'company_id' => $config->companyId,
             'partner_id' => $config->partnerId,
             'user_id' => $config->userId,
+            'tipo' => $config->tipo,
             'valor' => $config->valor,
         ];
     }

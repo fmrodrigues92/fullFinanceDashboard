@@ -28,11 +28,12 @@ it('cria config de pró-labore para um sócio e retorna id gerado', function () 
     $response = $this->actingAs($user)
         ->postJson("/companies/{$company->id}/prolabore-configs", [
             'partner_id' => $partner->id,
+            'tipo' => 'fixo',
             'valor' => 3000.00,
         ]);
 
     $response->assertCreated()
-        ->assertJsonStructure(['id', 'partner_id', 'valor']);
+        ->assertJsonStructure(['id', 'partner_id', 'tipo', 'valor']);
 
     $this->assertDatabaseHas('prolabore_configs', [
         'company_id' => $company->id,
@@ -49,12 +50,14 @@ it('rejeita config duplicada para o mesmo sócio e empresa', function () {
 
     $this->actingAs($user)->postJson("/companies/{$company->id}/prolabore-configs", [
         'partner_id' => $partner->id,
+        'tipo' => 'fixo',
         'valor' => 3000.00,
     ]);
 
     $this->actingAs($user)
         ->postJson("/companies/{$company->id}/prolabore-configs", [
             'partner_id' => $partner->id,
+            'tipo' => 'fixo',
             'valor' => 4000.00,
         ])
         ->assertUnprocessable();
@@ -76,6 +79,7 @@ it('rejeita config quando sócio não pertence à empresa', function () {
     $this->actingAs($user)
         ->postJson("/companies/{$companyA->id}/prolabore-configs", [
             'partner_id' => $partnerOfB->id,
+            'tipo' => 'fixo',
             'valor' => 3000.00,
         ])
         ->assertUnprocessable();
@@ -149,7 +153,7 @@ it('retorna 404 ao tentar atualizar config de outra empresa', function () {
     ]);
 
     $this->actingAs($user)
-        ->putJson("/companies/{$companyA->id}/prolabore-configs/{$configOfB->id}", ['valor' => 5000.00])
+        ->putJson("/companies/{$companyA->id}/prolabore-configs/{$configOfB->id}", ['tipo' => 'fixo', 'valor' => 5000.00])
         ->assertNotFound();
 });
 

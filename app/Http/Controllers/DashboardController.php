@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Src\Companies\Application\UseCases\Company\ListCompaniesUseCase;
+use Src\Companies\Application\UseCases\ProlaboreRecord\GetProlaboreDashboardUseCase;
 use Src\Companies\Domain\Company;
 use Src\Invoicing\Application\UseCases\Invoice\GetFaturamentoDashboardUseCase;
 
@@ -18,8 +19,11 @@ final class DashboardController extends Controller
         Request $request,
         ListCompaniesUseCase $listCompanies,
         GetFaturamentoDashboardUseCase $getFaturamento,
+        GetProlaboreDashboardUseCase $getProlabore,
     ): InertiaResponse|JsonResponse {
         $userId = (int) $request->user()->id;
+
+        $companiesDomain = $listCompanies($userId);
 
         $companies = array_map(
             fn (Company $company) => [
@@ -31,19 +35,27 @@ final class DashboardController extends Controller
                 'regime_tributario' => $company->regimeTributario->value,
                 'regime_tributario_label' => $company->regimeTributario->label(),
             ],
-            $listCompanies($userId),
+            $companiesDomain,
         );
 
         $competencias = $this->buildCompetencias();
+        $companyIds = array_map(fn (Company $c) => $c->id, $companiesDomain);
 
-        $faturamentoPorEmpresa = [];
-        foreach ($companies as $company) {
-            $faturamentoPorEmpresa[(string) $company['id']] = $getFaturamento($company['id'], $competencias);
+        // Faturamento — uma query whereIn para todas as empresas
+        $faturamentoPorEmpresa = $getFaturamento($companyIds, $competencias);
+
+        // Pró-labore + Fator R — uma query por fonte (records, configs, invoices)
+        $regimePorEmpresa = [];
+        foreach ($companiesDomain as $company) {
+            $regimePorEmpresa[$company->id] = $company->regimeTributario->value;
         }
+
+        $prolaborePorEmpresa = $getProlabore($companyIds, $regimePorEmpresa, $competencias);
 
         $payload = [
             'companies' => $companies,
             'faturamentoPorEmpresa' => $faturamentoPorEmpresa,
+            'prolaborePorEmpresa' => $prolaborePorEmpresa,
         ];
 
         return $request->expectsJson()

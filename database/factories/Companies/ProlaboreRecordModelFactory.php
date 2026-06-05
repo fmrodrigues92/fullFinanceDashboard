@@ -23,6 +23,12 @@ final class ProlaboreRecordModelFactory extends Factory
             'competencia' => '2026-05-01',
             'valor' => fake()->randomFloat(2, 1000, 10000),
             'observacao' => null,
+            'origem' => 'manual',
         ];
+    }
+
+    public function automatico(): static
+    {
+        return $this->state(['origem' => 'automatico']);
     }
 }

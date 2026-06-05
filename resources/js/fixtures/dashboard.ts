@@ -26,6 +26,7 @@ export const MOCK_DASHBOARD: DashboardMockData = {
             { tipo: 'nacional', valor: 25000.0, quantidade: 3 },
             { tipo: 'internacional', valor: 10000.0, quantidade: 1 },
         ],
+        is_simulado: false,
     },
     gastos: {
         total: 2000.0,

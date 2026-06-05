@@ -19,86 +19,84 @@ afterEach(fn () => Mockery::close());
 
 // ─── Delegação ao repository ─────────────────────────────────────────────────
 
-it('delega ao repository com companyId e competencias corretos', function () {
-    $companyId = 42;
+it('delega ao repository com companyIds e competencias corretos', function () {
+    $companyIds = [42];
     $competencias = ['2026-01', '2026-02', '2026-03'];
 
     $expected = [
-        '2026-01' => ['total' => 5000.0, 'notas_emitidas' => 2, 'itens' => [
-            ['tipo' => 'nacional', 'valor' => 5000.0, 'quantidade' => 2],
-        ]],
-        '2026-02' => ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => []],
-        '2026-03' => ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => []],
+        '42' => [
+            '2026-01' => ['total' => 5000.0, 'notas_emitidas' => 2, 'itens' => [
+                ['tipo' => 'nacional', 'valor' => 5000.0, 'quantidade' => 2],
+            ]],
+            '2026-02' => ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => []],
+            '2026-03' => ['total' => 0.0, 'notas_emitidas' => 0, 'itens' => []],
+        ],
     ];
 
     $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
+        ->shouldReceive('faturamentoPorCompetenciasMultiEmpresa')
         ->once()
-        ->with($companyId, $competencias)
+        ->with($companyIds, $competencias)
         ->andReturn($expected);
 
-    $result = ($this->useCase)($companyId, $competencias);
+    $result = ($this->useCase)($companyIds, $competencias);
 
     expect($result)->toBe($expected);
 });
 
 it('devolve o resultado intacto do repository sem transformação', function () {
     $rawResult = [
-        '2025-12' => ['total' => 12345.67, 'notas_emitidas' => 7, 'itens' => [
-            ['tipo' => 'internacional', 'valor' => 12345.67, 'quantidade' => 7],
-        ]],
+        '1' => [
+            '2025-12' => ['total' => 12345.67, 'notas_emitidas' => 7, 'itens' => [
+                ['tipo' => 'internacional', 'valor' => 12345.67, 'quantidade' => 7],
+            ]],
+        ],
     ];
 
     $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
+        ->shouldReceive('faturamentoPorCompetenciasMultiEmpresa')
         ->andReturn($rawResult);
 
-    $result = ($this->useCase)(1, ['2025-12']);
+    $result = ($this->useCase)([1], ['2025-12']);
 
     expect($result)->toBe($rawResult);
 });
 
-it('aceita lista vazia de competencias e repassa ao repository', function () {
-    $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
-        ->once()
-        ->with(1, [])
-        ->andReturn([]);
+it('aceita lista vazia de companyIds e retorna array vazio', function () {
+    $result = ($this->useCase)([], ['2026-01']);
 
-    $result = ($this->useCase)(1, []);
+    expect($result)->toBe([]);
+});
+
+it('aceita lista vazia de competencias e retorna array vazio', function () {
+    $result = ($this->useCase)([1], []);
 
     expect($result)->toBe([]);
 });
 
 it('chama o repository exatamente uma vez por invocação', function () {
     $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
+        ->shouldReceive('faturamentoPorCompetenciasMultiEmpresa')
         ->once()
         ->andReturn([]);
 
-    ($this->useCase)(99, ['2026-06']);
+    ($this->useCase)([99], ['2026-06']);
 });
 
-it('isola companyIds distintos — não mistura resultados entre empresas', function () {
-    $resultEmpresa1 = ['2026-01' => ['total' => 1000.0, 'notas_emitidas' => 1, 'itens' => [
-        ['tipo' => 'nacional', 'valor' => 1000.0, 'quantidade' => 1],
-    ]]];
-    $resultEmpresa2 = ['2026-01' => ['total' => 9999.0, 'notas_emitidas' => 5, 'itens' => [
-        ['tipo' => 'internacional', 'valor' => 9999.0, 'quantidade' => 5],
-    ]]];
+it('isola companyIds distintos retornando dados separados por empresa', function () {
+    $expected = [
+        '1' => ['2026-01' => ['total' => 1000.0, 'notas_emitidas' => 1, 'itens' => []]],
+        '2' => ['2026-01' => ['total' => 9999.0, 'notas_emitidas' => 5, 'itens' => []]],
+    ];
 
     $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
-        ->with(1, ['2026-01'])
+        ->shouldReceive('faturamentoPorCompetenciasMultiEmpresa')
         ->once()
-        ->andReturn($resultEmpresa1);
+        ->with([1, 2], ['2026-01'])
+        ->andReturn($expected);
 
-    $this->repo
-        ->shouldReceive('faturamentoPorCompetencias')
-        ->with(2, ['2026-01'])
-        ->once()
-        ->andReturn($resultEmpresa2);
+    $result = ($this->useCase)([1, 2], ['2026-01']);
 
-    expect(($this->useCase)(1, ['2026-01']))->toBe($resultEmpresa1)
-        ->and(($this->useCase)(2, ['2026-01']))->toBe($resultEmpresa2);
+    expect($result['1']['2026-01']['total'])->toBe(1000.0)
+        ->and($result['2']['2026-01']['total'])->toBe(9999.0);
 });

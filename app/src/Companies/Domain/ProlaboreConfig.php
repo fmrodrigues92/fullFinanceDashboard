@@ -12,6 +12,7 @@ final class ProlaboreConfig
         public readonly int $partnerId,
         public readonly int $userId,
         public readonly float $valor,
+        public readonly string $tipo, // 'fixo' | 'percentual'
     ) {}
 
     public static function create(
@@ -19,6 +20,7 @@ final class ProlaboreConfig
         int $partnerId,
         int $userId,
         float $valor,
+        string $tipo = 'fixo',
     ): self {
         return new self(
             id: null,
@@ -26,6 +28,7 @@ final class ProlaboreConfig
             partnerId: $partnerId,
             userId: $userId,
             valor: $valor,
+            tipo: $tipo,
         );
     }
 
@@ -35,6 +38,7 @@ final class ProlaboreConfig
         int $partnerId,
         int $userId,
         float $valor,
+        string $tipo = 'fixo',
     ): self {
         return new self(
             id: $id,
@@ -42,10 +46,11 @@ final class ProlaboreConfig
             partnerId: $partnerId,
             userId: $userId,
             valor: $valor,
+            tipo: $tipo,
         );
     }
 
-    public function update(float $valor): self
+    public function update(float $valor, string $tipo): self
     {
         return new self(
             id: $this->id,
@@ -53,6 +58,7 @@ final class ProlaboreConfig
             partnerId: $this->partnerId,
             userId: $this->userId,
             valor: $valor,
+            tipo: $tipo,
         );
     }
 }

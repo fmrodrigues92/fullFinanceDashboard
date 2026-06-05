@@ -16,6 +16,7 @@ final class EloquentProlaboreConfigRepository implements ProlaboreConfigReposito
             'partner_id' => $config->partnerId,
             'user_id' => $config->userId,
             'valor' => $config->valor,
+            'tipo' => $config->tipo,
         ];
 
         if ($config->id !== null) {
@@ -59,6 +60,38 @@ final class EloquentProlaboreConfigRepository implements ProlaboreConfigReposito
             ->delete();
     }
 
+    public function configsWithPartnerNamesForCompanies(array $companyIds): array
+    {
+        if (empty($companyIds)) {
+            return [];
+        }
+
+        $rows = ProlaboreConfigModel::query()
+            ->join('company_partners', 'prolabore_configs.partner_id', '=', 'company_partners.id')
+            ->whereIn('prolabore_configs.company_id', $companyIds)
+            ->whereNull('company_partners.deleted_at')
+            ->get([
+                'prolabore_configs.company_id',
+                'prolabore_configs.partner_id',
+                'prolabore_configs.tipo',
+                'prolabore_configs.valor',
+                'company_partners.nome',
+            ]);
+
+        $result = [];
+        foreach ($rows as $row) {
+            $cid = (int) $row->company_id;
+            $pid = (int) $row->partner_id;
+            $result[$cid][$pid] = [
+                'valor' => (float) $row->valor,
+                'nome' => (string) $row->nome,
+                'tipo' => (string) ($row->tipo ?? 'fixo'),
+            ];
+        }
+
+        return $result;
+    }
+
     private function toDomain(ProlaboreConfigModel $m): ProlaboreConfig
     {
         return ProlaboreConfig::fromPersistence(
@@ -67,6 +100,7 @@ final class EloquentProlaboreConfigRepository implements ProlaboreConfigReposito
             partnerId: (int) $m->partner_id,
             userId: (int) $m->user_id,
             valor: (float) $m->valor,
+            tipo: (string) ($m->tipo ?? 'fixo'),
         );
     }
 }
