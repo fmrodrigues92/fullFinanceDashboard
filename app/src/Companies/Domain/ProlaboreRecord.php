@@ -75,7 +75,7 @@ final class ProlaboreRecord
             competencia: $competencia,
             valor: $valor,
             observacao: $observacao,
-            origem: $this->origem, // preserva origem ao editar
+            origem: 'manual', // RN8: edição manual sempre marca como 'manual'
         );
     }
 }

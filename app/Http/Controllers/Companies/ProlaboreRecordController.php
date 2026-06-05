@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Companies\StoreProlaboreRecordRequest;
 use App\Http\Requests\Companies\UpdateProlaboreRecordRequest;
 use DateTimeImmutable;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,9 +16,9 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Src\Companies\Application\DTOs\CreateProlaboreRecordInput;
 use Src\Companies\Application\DTOs\UpdateProlaboreRecordInput;
+use Src\Companies\Application\UseCases\Partner\ListCompanyPartnersUseCase;
 use Src\Companies\Application\UseCases\ProlaboreRecord\CreateProlaboreRecordUseCase;
 use Src\Companies\Application\UseCases\ProlaboreRecord\DeleteProlaboreRecordUseCase;
-use Src\Companies\Application\UseCases\Partner\ListCompanyPartnersUseCase;
 use Src\Companies\Application\UseCases\ProlaboreRecord\ListProlaboreRecordsUseCase;
 use Src\Companies\Application\UseCases\ProlaboreRecord\UpdateProlaboreRecordUseCase;
 use Src\Companies\Domain\CompanyPartner;
@@ -85,6 +86,12 @@ final class ProlaboreRecordController extends Controller
             return $request->expectsJson()
                 ? response()->json(['message' => $e->getMessage()], 422)
                 : redirect()->back()->withErrors(['partner_id' => $e->getMessage()]);
+        } catch (QueryException $e) {
+            $message = 'Já existe um recibo para este sócio nesta competência.';
+
+            return $request->expectsJson()
+                ? response()->json(['message' => $message], 422)
+                : redirect()->back()->withErrors(['competencia' => $message]);
         }
 
         if ($request->expectsJson()) {
@@ -93,7 +100,7 @@ final class ProlaboreRecordController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Recibo de pró-labore criado com sucesso.']);
 
-        return redirect()->route('companies.prolabore-records.index', $company->id);
+        return redirect()->back();
     }
 
     public function update(
@@ -103,6 +110,7 @@ final class ProlaboreRecordController extends Controller
         UpdateProlaboreRecordUseCase $update,
     ): JsonResponse|RedirectResponse {
         abort_if((int) $record->company_id !== (int) $company->id, 404);
+        abort_if(substr((string) $record->competencia, 0, 7) !== date('Y-m'), 422);
         $this->authorize('update', $record);
 
         $data = $request->validated();
@@ -156,6 +164,7 @@ final class ProlaboreRecordController extends Controller
             'competencia' => $record->competencia->format('Y-m-d'),
             'valor' => $record->valor,
             'observacao' => $record->observacao,
+            'origem' => $record->origem,
         ];
     }
 

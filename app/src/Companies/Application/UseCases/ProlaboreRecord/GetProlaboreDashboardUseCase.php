@@ -21,7 +21,7 @@ final readonly class GetProlaboreDashboardUseCase
      * @param  int[]  $companyIds
      * @param  array<int,string>  $regimePorEmpresa  [companyId => 'simples_nacional'|...]
      * @param  string[]  $competencias  'YYYY-MM', 13 items
-     * @return array<string, array<string, array{total: float, tipo: string, fator_r: ?array, socios: list<array{nome: string, valor: float, tipo: string}>}>>
+     * @return array<string, array<string, array{total: float, tipo: string, fator_r: ?array, socios: list<array{nome: string, valor: float, tipo: string, partner_id: int, record_id: int|null}>}>>
      */
     public function __invoke(
         array $companyIds,
@@ -94,9 +94,9 @@ final readonly class GetProlaboreDashboardUseCase
     }
 
     /**
-     * @param  array<int, array{valor: float, origem: string}>  $compRecords
-     * @param  array<int, array{valor: float, nome: string}>  $compConfigs
-     * @return array{0: string, 1: list<array{nome: string, valor: float, tipo: string}>, 2: float}
+     * @param  array<int, array{id: int, valor: float, origem: string}>  $compRecords
+     * @param  array<int, array{valor: float, nome: string, tipo: string}>  $compConfigs
+     * @return array{0: string, 1: list<array{nome: string, valor: float, tipo: string, partner_id: int, record_id: int|null}>, 2: float}
      */
     private function classify(
         bool $isPast,
@@ -119,7 +119,13 @@ final readonly class GetProlaboreDashboardUseCase
                 if ($tipoSocio === 'recibo_manual') {
                     $allAuto = false;
                 }
-                $socios[] = ['nome' => $nome, 'valor' => $rec['valor'], 'tipo' => $tipoSocio];
+                $socios[] = [
+                    'nome' => $nome,
+                    'valor' => $rec['valor'],
+                    'tipo' => $tipoSocio,
+                    'partner_id' => $partnerId,
+                    'record_id' => $rec['id'],
+                ];
                 $total += $rec['valor'];
             }
 
@@ -137,9 +143,15 @@ final readonly class GetProlaboreDashboardUseCase
 
             $socios = [];
             $total = 0.0;
-            foreach ($compConfigs as $cfg) {
+            foreach ($compConfigs as $partnerId => $cfg) {
                 $valor = $this->configValor($cfg, $fatReal);
-                $socios[] = ['nome' => $cfg['nome'], 'valor' => $valor, 'tipo' => 'sem_recibo'];
+                $socios[] = [
+                    'nome' => $cfg['nome'],
+                    'valor' => $valor,
+                    'tipo' => 'sem_recibo',
+                    'partner_id' => $partnerId,
+                    'record_id' => null,
+                ];
                 $total += $valor;
             }
 
@@ -160,9 +172,15 @@ final readonly class GetProlaboreDashboardUseCase
         $fat = $fatReal > 0.0 ? $fatReal : $fatSim;
         $socios = [];
         $total = 0.0;
-        foreach ($compConfigs as $cfg) {
+        foreach ($compConfigs as $partnerId => $cfg) {
             $valor = $this->configValor($cfg, $fat);
-            $socios[] = ['nome' => $cfg['nome'], 'valor' => $valor, 'tipo' => 'previsao'];
+            $socios[] = [
+                'nome' => $cfg['nome'],
+                'valor' => $valor,
+                'tipo' => 'previsao',
+                'partner_id' => $partnerId,
+                'record_id' => null,
+            ];
             $total += $valor;
         }
 

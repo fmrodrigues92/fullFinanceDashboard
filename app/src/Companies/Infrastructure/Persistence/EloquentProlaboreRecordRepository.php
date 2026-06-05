@@ -81,7 +81,7 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
 
     /**
      * @param  int[]  $companyIds
-     * @return array<int, array<string, array<int, array{valor: float, origem: string}>>>
+     * @return array<int, array<string, array<int, array{id: int, valor: float, origem: string}>>>
      */
     public function dashboardRecordsForCompanies(array $companyIds, DateTimeImmutable $from, DateTimeImmutable $to): array
     {
@@ -93,7 +93,7 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
             ->whereIn('company_id', $companyIds)
             ->where('competencia', '>=', $from->format('Y-m-d'))
             ->where('competencia', '<', $to->format('Y-m-d'))
-            ->get(['company_id', 'partner_id', 'competencia', 'valor', 'origem']);
+            ->get(['id', 'company_id', 'partner_id', 'competencia', 'valor', 'origem']);
 
         $result = [];
         foreach ($rows as $row) {
@@ -101,6 +101,7 @@ final class EloquentProlaboreRecordRepository implements ProlaboreRecordReposito
             $pid = (int) $row->partner_id;
             $comp = substr((string) $row->competencia, 0, 7); // YYYY-MM
             $result[$cid][$comp][$pid] = [
+                'id' => (int) $row->id,
                 'valor' => (float) $row->valor,
                 'origem' => (string) $row->origem,
             ];

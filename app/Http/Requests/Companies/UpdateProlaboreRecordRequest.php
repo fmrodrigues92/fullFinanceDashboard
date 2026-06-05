@@ -20,6 +20,12 @@ final class UpdateProlaboreRecordRequest extends FormRequest
                 'string',
                 'date_format:Y-m',
                 function (string $attribute, mixed $value, \Closure $fail) use ($companyId, $record): void {
+                    if ($value !== date('Y-m')) {
+                        $fail('Só é possível lançar o pró-labore do mês corrente por aqui.');
+
+                        return;
+                    }
+
                     $exists = DB::table('prolabore_records')
                         ->where('company_id', $companyId)
                         ->where('partner_id', $record?->partner_id)
@@ -34,7 +40,7 @@ final class UpdateProlaboreRecordRequest extends FormRequest
                 },
             ],
             'valor' => ['required', 'numeric', 'gt:0'],
-            'observacao' => ['nullable', 'string'],
+            'observacao' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

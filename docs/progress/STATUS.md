@@ -16,6 +16,7 @@ Quadro de acompanhamento a nível de negócio. Mantido pelo `/gerente`.
 | 004 — Dashboard V2: Faturamento Real | Dashboard | `auditoria-pendente` | `docs/specs/004-dashboard-v2.md` | `docs/contracts/004-dashboard-v2.md` | Backend + frontend entregues 2026-06-03; 82 testes verdes; auditoria: 2 achados BAIXO — SEC-01 (ownership check no repository) e PERF-01 (N+1 → consolidar em query única); correções em `docs/audits/004-dashboard-v2-2026-06-03.md` |
 
 | 005 — Dashboard V3: Pró-labore Real + Fator R | Dashboard + Companies | `auditoria-ok` | `docs/specs/005-dashboard-v3.md` | `docs/contracts/005-dashboard-v3.md` | Backend + frontend entregues 2026-06-04; migração origem em prolabore_records; GetProlaboreDashboardUseCase; GenerateProlaboreRecordsCommand schedulado; ProlaboreCard redesenhado com badge de tipo e Fator R; 44 testes verdes. Auditoria: SEC-01 (MÉDIO) e SEC-02 (BAIXO) corrigidos em 2026-06-04. Ver `docs/audits/005-dashboard-v3-2026-06-04.md` |
+| 006 — Recibo de Pró-labore Inline no Dashboard | Dashboard + Companies | `auditoria-ok` | `docs/specs/006-prolabore-dashboard-inline.md` | `docs/contracts/006-prolabore-dashboard-inline.md` | Backend + frontend entregues 2026-06-05; 213 testes verdes; types:check zero erros. Auditoria: SEC-01 (MÉDIO) e SEC-02 (BAIXO) corrigidos em 2026-06-05. Ver `docs/audits/006-prolabore-dashboard-inline-2026-06-05.md` |
 
 ## Backlog
 - Feature de fechamento de mês (consumirá `prolabore_records` da feature 001)

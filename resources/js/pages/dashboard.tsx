@@ -157,7 +157,11 @@ export default function Dashboard({
                 {/* Cards de resumo financeiro */}
                 <div className="grid gap-4 md:grid-cols-2">
                     <DasCard das={MOCK_DASHBOARD.das} />
-                    <ProlaboreCard prolabore={currentProlabore} />
+                    <ProlaboreCard
+                        prolabore={currentProlabore}
+                        companyId={selectedCompanyId ?? 0}
+                        isCurrentMonth={selectedMonthKey === CURRENT_MONTH_KEY}
+                    />
                     <FaturamentoCard faturamento={currentFaturamento} />
                     <GastosCard gastos={MOCK_DASHBOARD.gastos} />
                 </div>

@@ -24,7 +24,7 @@ interface ProlaboreRecordRepository
      * Retorna registros agrupados por [company_id][YYYY-MM][partner_id] para o dashboard.
      *
      * @param  int[]  $companyIds
-     * @return array<int, array<string, array<int, array{valor: float, origem: string}>>>
+     * @return array<int, array<string, array<int, array{id: int, valor: float, origem: string}>>>
      */
     public function dashboardRecordsForCompanies(array $companyIds, DateTimeImmutable $from, DateTimeImmutable $to): array;
 }

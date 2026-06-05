@@ -58,6 +58,34 @@ export interface SocioProlaboreDashboard {
     nome: string;
     valor: number;
     tipo: ProlaboreTipo;
+    partner_id: number; // id do sócio
+    record_id: number | null; // id do recibo se existir; null = criar
+}
+
+// ─── Payloads de escrita (feature 006) ───────────────────────────────────────
+
+export interface CreateProlaboreRecordPayload {
+    partner_id: number;
+    competencia: string; // 'YYYY-MM' (mês corrente)
+    valor: number; // > 0
+    observacao: string | null; // max 500
+}
+
+export interface UpdateProlaboreRecordPayload {
+    competencia: string; // 'YYYY-MM' (mês corrente)
+    valor: number; // > 0
+    observacao: string | null;
+}
+
+export interface ProlaboreRecord {
+    id: number;
+    company_id: number;
+    partner_id: number;
+    user_id: number;
+    competencia: string; // 'YYYY-MM-01'
+    valor: number;
+    observacao: string | null;
+    origem: 'manual' | 'automatico';
 }
 
 export interface ProlaboreDashboardData {
